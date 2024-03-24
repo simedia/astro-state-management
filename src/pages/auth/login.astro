@@ -1,0 +1,19 @@
+---
+import { sessionStore } from '@src/lib/store.ts';
+
+// already connected ?
+if (sessionStore.isConnected())
+  return Astro.redirect('/');
+
+const who = "hello world"
+sessionStore.set('who', who);
+const idUser = 1
+sessionStore.set('idUser', idUser);
+---
+
+<h1>Sign in</h1>
+<div>Fixed sign in as '{who}' (idUser={idUser})</div>
+
+<div>
+  <a href="/">Home</a>
+</div>

@@ -1,0 +1,23 @@
+---
+import { sessionStore } from "@src/lib/store";
+
+    const sessionID = Astro.cookies.get('sessionASTRO')?.value! ?? null;
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Astro</title>
+    </head>
+    <body>
+        <h1>State management with cookie</h1>
+        <h2>My session cookie is {sessionID}</h2>
+
+
+        {!sessionStore.isConnected() && <a href="/auth/login">Sign in</a>}
+        {sessionStore.isConnected() && <a href="/auth/logout">Sign out</a>}
+    </body>
+</html>

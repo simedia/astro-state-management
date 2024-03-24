@@ -1,0 +1,22 @@
+{
+    "name": "astro_session_at_start",
+    "type": "module",
+    "version": "0.0.1",
+    "scripts": {
+        "dev": "astro dev",
+        "start": "astro dev",
+        "build": "astro build",
+        "preview": "astro preview",
+        "astro": "astro"
+    },
+    "dependencies": {
+        "@astrojs/node": "^8.2.3",
+        "astro": "^4.5.0",
+        "crypto-random-string": "^5.0.0",
+        "ioredis": "^5.3.2",
+        "nanostores": "^0.10.0"
+    },
+    "engines": {
+        "node": ">=18.14.1"
+    }
+}

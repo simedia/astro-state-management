@@ -1,0 +1,13 @@
+---
+import { sessionStore } from '@src/lib/store.ts';
+
+// not connected ?
+if (!sessionStore.isConnected())
+  return Astro.redirect('/');
+
+sessionStore.del('who')
+sessionStore.del('idUser')
+---
+
+<h1>Sign out</h1>
+<div>Bye, but you still have a cookie for state management</div>
