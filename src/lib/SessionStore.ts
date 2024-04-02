@@ -1,10 +1,12 @@
 import Redis from "ioredis";
+import cryptoRandomString from 'crypto-random-string';
+
+import { session_get } from '../session.ts';
 
 export class SessionStore {
-  private redis: Redis;
-  private sessionID: string | null = null;
-  cookie_name = "sessionASTRO";
-  session: any
+  private redis: Redis
+  private sessionID: string = ''
+  cookie_name = "sessionASTRO"
 
   constructor() {
     const redis_db = import.meta.env.REDIS_DB
@@ -13,28 +15,39 @@ export class SessionStore {
   }
 
 
-  async init(sessionID: string): Promise<any> {
-    this.sessionID = sessionID;
-    this.session = await(this.load());
+  async load(sessionID: string): Promise<any> {
+    // no session ID (mostly no cookie)
+    if (sessionID.length == 0)
+      sessionID = this.id()
+
+    // session if forgotten ? New session ID
+    let raw = await this.redis.get(sessionID)
+    if (raw == null) {
+      sessionID = this.id()
+      raw = '{}'
+    }
+    let session: any = null
+    try {
+      session = JSON.parse(raw)
+    } catch(e) {
+      throw new Error('session is corrupted');
+    }
+
+    session.ID = sessionID
+    return session;
   }
 
 
-  async load(): Promise<any> {
-    if (this.sessionID == null)
+  async write(session: any): Promise<boolean> {
+    if (typeof session.ID == 'undefined')
       throw new Error('sessionID is not defined');
 
-    const raw = await this.redis.get(this.sessionID) || '{}';
-    return JSON.parse(raw)
-  }
-
-
-  async write(): Promise<boolean> {
-    if (this.sessionID == null)
-      throw new Error('sessionID is not defined');
+    const sessionID = session.ID
+    delete(session.ID)
 
     // while writing, reset expiration
-    const s = JSON.stringify(this.session)
-    var isOk = await this.redis.set(this.sessionID, s, 'EX', 3600);
+    const s = JSON.stringify(session)
+    var isOk = await this.redis.set(sessionID, s, 'EX', 3600);
     if (isOk)
       return true;
 
@@ -43,33 +56,7 @@ export class SessionStore {
   }
 
 
-
-  set(key: string, v: any): void {
-    this.session[key] = v;
-  }
-
-
-  get(key: string): any {
-    if (this.session === null)
-      return null;
-
-    if (this.session.hasOwnProperty(key))
-      return typeof this.session[key];
-    return null;
-  }
-
-  del(key: string): void {
-    if (this.session === null)
-      return;
-
-    if (!this.session.hasOwnProperty(key))
-      return;
-
-    delete(this.session[key]);
-  }
-
-
-  isConnected(): boolean {
-    return typeof this.session.who !== 'undefined';
+  id() {
+    return cryptoRandomString({length: 10, type: 'alphanumeric'})
   }
 }

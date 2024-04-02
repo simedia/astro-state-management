@@ -1,7 +1,7 @@
 ---
-import { sessionStore } from "@src/lib/store";
+import { session_get } from "@src/session.ts";
 
-    const sessionID = Astro.cookies.get('sessionASTRO')?.value! ?? null;
+const sessionID = Astro.cookies.get('sessionASTRO')?.value! ?? null;
 ---
 
 <html lang="en">
@@ -16,8 +16,17 @@ import { sessionStore } from "@src/lib/store";
         <h1>State management with cookie</h1>
         <h2>My session cookie is {sessionID}</h2>
 
+        <p>
+            <div>
+                {!session_get('who') && <a href="/auth/login">Sign in</a>}
+            </div>
+            <div>
+                {session_get('who') && <a href="/auth/logout">Sign out</a>}
+            </div>
+        </p>
 
-        {!sessionStore.isConnected() && <a href="/auth/login">Sign in</a>}
-        {sessionStore.isConnected() && <a href="/auth/logout">Sign out</a>}
+        <p>
+            <a href="/demo">Check demo page</a>
+        </p>
     </body>
 </html>

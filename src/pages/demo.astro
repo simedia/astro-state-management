@@ -1,0 +1,27 @@
+---
+import { session_get, session_set } from '../session.ts';
+
+// reset n
+let n = session_get('viewed_n')
+if (Astro.url.searchParams.get('init') != null)
+  n = 0
+
+n++
+
+session_set('viewed_n', n)
+---
+<h1>
+  Demo
+</h1>
+
+<h2>
+  You view this page {n} times
+</h2>
+
+<p>
+  Each time you reach this page, the counter in incremented <a href="/demo?init">Reset counter</a>
+</p>
+
+<p>
+  <a href="/">Home</a>
+</p>
